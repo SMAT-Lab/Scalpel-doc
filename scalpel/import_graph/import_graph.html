@@ -103,7 +103,7 @@
 
 
 <span class="k">class</span> <span class="nc">Tree</span><span class="p">:</span>
-    <span class="c1"># a datastructure that contain information for a tree node </span>
+    <span class="c1"># a data structure that contain information for a tree node</span>
     <span class="c1"># to be named </span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -123,6 +123,7 @@
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">ImportGraph</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -164,11 +165,10 @@
                     <span class="n">node</span><span class="o">.</span><span class="n">class_pair</span> <span class="o">=</span> <span class="n">pair</span>
                     <span class="n">node</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf2root</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                     <span class="n">node</span><span class="o">.</span><span class="n">full_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span>
-              
 
     <span class="k">def</span> <span class="nf">build_dir_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        To build enhanced directory tree for futher anaysis</span>
+<span class="sd">        To build enhanced directory tree for further analysis</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="n">working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entry_point</span><span class="p">)</span>
@@ -191,7 +191,6 @@
                 <span class="n">leaf_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_node</span><span class="p">)</span>
             <span class="n">working_queue</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cur_node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">leaf_nodes</span>
-     
         
     <span class="k">def</span> <span class="nf">go_to_that_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cur_node</span><span class="p">,</span> <span class="n">visit_path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -336,7 +335,7 @@
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Tree</span><span class="p">:</span>
-    <span class="c1"># a datastructure that contain information for a tree node </span>
+    <span class="c1"># a data structure that contain information for a tree node</span>
     <span class="c1"># to be named </span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -445,11 +444,10 @@
                     <span class="n">node</span><span class="o">.</span><span class="n">class_pair</span> <span class="o">=</span> <span class="n">pair</span>
                     <span class="n">node</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf2root</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                     <span class="n">node</span><span class="o">.</span><span class="n">full_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span>
-              
 
     <span class="k">def</span> <span class="nf">build_dir_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        To build enhanced directory tree for futher anaysis</span>
+<span class="sd">        To build enhanced directory tree for further analysis</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="n">working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entry_point</span><span class="p">)</span>
@@ -472,7 +470,6 @@
                 <span class="n">leaf_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_node</span><span class="p">)</span>
             <span class="n">working_queue</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cur_node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">leaf_nodes</span>
-     
         
     <span class="k">def</span> <span class="nf">go_to_that_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cur_node</span><span class="p">,</span> <span class="n">visit_path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -653,7 +650,7 @@ The argument must not endswith slash!</p>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">build_dir_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        To build enhanced directory tree for futher anaysis</span>
+<span class="sd">        To build enhanced directory tree for further analysis</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="n">working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entry_point</span><span class="p">)</span>
@@ -664,7 +661,7 @@ The argument must not endswith slash!</p>
 
         </details>
 
-            <div class="docstring"><p>To build enhanced directory tree for futher anaysis</p>
+            <div class="docstring"><p>To build enhanced directory tree for further analysis</p>
 </div>
 
 

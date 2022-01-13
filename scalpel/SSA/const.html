@@ -103,15 +103,16 @@ futher anaysis. The module contain a single class named SSA.</p>
 <span class="kn">from</span> <span class="nn">..core.vars_visitor</span>  <span class="kn">import</span> <span class="n">get_vars</span>
 
 <span class="k">def</span> <span class="nf">parse_val</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
-   <span class="c1"># does not return anything</span>
-   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
+    <span class="c1"># does not return anything</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
-   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Str</span><span class="p">):</span>
-       <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
-           <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
-       <span class="k">else</span><span class="p">:</span>
-           <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
-   <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
+    <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
+
 
 <span class="k">class</span> <span class="nc">SSA</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -138,7 +139,6 @@ futher anaysis. The module contain a single class named SSA.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">undefined_names_from</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_names</span> <span class="o">=</span> <span class="p">[]</span>
 
-
     <span class="k">def</span> <span class="nf">get_attribute_stmts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmts</span><span class="p">):</span>
         <span class="n">call_stmts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">stmts</span><span class="p">:</span>
@@ -156,7 +156,6 @@ futher anaysis. The module contain a single class named SSA.</p>
         <span class="n">res</span> <span class="o">=</span> <span class="n">get_vars</span><span class="p">(</span><span class="n">ast_node</span><span class="p">)</span>
         <span class="n">idents</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span>  <span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">idents</span>
-    
 
     <span class="k">def</span> <span class="nf">compute_SSA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -237,9 +236,6 @@ futher anaysis. The module contain a single class named SSA.</p>
                     <span class="c1">#        phi_loaded_idents[ident].append(ident_name_counter[ident])</span>
                     <span class="c1">#else if ident in ident_name_counter:</span>
 
-                        
-                        
-    
             <span class="n">df_block_ids</span> <span class="o">=</span> <span class="n">DF</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">df_block_id</span> <span class="ow">in</span> <span class="n">df_block_ids</span><span class="p">:</span>
                 <span class="n">df_block</span> <span class="o">=</span> <span class="n">id2blocks</span><span class="p">[</span><span class="n">df_block_id</span><span class="p">]</span> 
@@ -249,8 +245,7 @@ futher anaysis. The module contain a single class named SSA.</p>
                         <span class="c1"># this var used</span>
                         <span class="k">if</span> <span class="n">af_ident</span> <span class="ow">in</span> <span class="n">phi_loaded_idents</span><span class="p">:</span>  
                             <span class="n">phi_loaded_idents</span><span class="p">[</span><span class="n">af_ident</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ident_name_counter</span><span class="p">[</span><span class="n">af_ident</span><span class="p">])</span>
-                                       
-       
+    
         <span class="k">return</span> <span class="n">block_renamed_loaded</span><span class="p">,</span> <span class="n">ident_const_dict</span>
 
     <span class="k">def</span> <span class="nf">get_stmt_idents_ctx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">del_set</span><span class="o">=</span><span class="p">[],</span> <span class="n">const_dict</span> <span class="o">=</span> <span class="p">{}):</span>
@@ -280,6 +275,16 @@ futher anaysis. The module contain a single class named SSA.</p>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
                 <span class="n">left_name</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span>
                 <span class="n">const_dict</span><span class="p">[</span><span class="n">left_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>
+                <span class="c1">#TODO: resolve attributes</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AugAssign</span><span class="p">):</span>
+            <span class="c1"># note here , we need to rewrite this value to its extended form</span>
+            <span class="c1"># if the statement is &quot;a += 1&quot;, then the assigned value should be a+1</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
+                <span class="n">left_name</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">extended_right</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">left_name</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span> <span class="n">stmt</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">const_dict</span><span class="p">[</span><span class="n">left_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">extended_right</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>
                 <span class="c1">#TODO: resolve attributes</span>
                 <span class="k">pass</span>
@@ -417,15 +422,15 @@ futher anaysis. The module contain a single class named SSA.</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">parse_val</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
-   <span class="c1"># does not return anything</span>
-   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
+    <span class="c1"># does not return anything</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
-   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Str</span><span class="p">):</span>
-       <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
-           <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
-       <span class="k">else</span><span class="p">:</span>
-           <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
-   <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
+    <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
 </pre></div>
 
         </details>
@@ -469,7 +474,6 @@ futher anaysis. The module contain a single class named SSA.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">undefined_names_from</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_names</span> <span class="o">=</span> <span class="p">[]</span>
 
-
     <span class="k">def</span> <span class="nf">get_attribute_stmts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmts</span><span class="p">):</span>
         <span class="n">call_stmts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">stmts</span><span class="p">:</span>
@@ -487,7 +491,6 @@ futher anaysis. The module contain a single class named SSA.</p>
         <span class="n">res</span> <span class="o">=</span> <span class="n">get_vars</span><span class="p">(</span><span class="n">ast_node</span><span class="p">)</span>
         <span class="n">idents</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span> <span class="k">if</span>  <span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">idents</span>
-    
 
     <span class="k">def</span> <span class="nf">compute_SSA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -568,9 +571,6 @@ futher anaysis. The module contain a single class named SSA.</p>
                     <span class="c1">#        phi_loaded_idents[ident].append(ident_name_counter[ident])</span>
                     <span class="c1">#else if ident in ident_name_counter:</span>
 
-                        
-                        
-    
             <span class="n">df_block_ids</span> <span class="o">=</span> <span class="n">DF</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">df_block_id</span> <span class="ow">in</span> <span class="n">df_block_ids</span><span class="p">:</span>
                 <span class="n">df_block</span> <span class="o">=</span> <span class="n">id2blocks</span><span class="p">[</span><span class="n">df_block_id</span><span class="p">]</span> 
@@ -580,8 +580,7 @@ futher anaysis. The module contain a single class named SSA.</p>
                         <span class="c1"># this var used</span>
                         <span class="k">if</span> <span class="n">af_ident</span> <span class="ow">in</span> <span class="n">phi_loaded_idents</span><span class="p">:</span>  
                             <span class="n">phi_loaded_idents</span><span class="p">[</span><span class="n">af_ident</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ident_name_counter</span><span class="p">[</span><span class="n">af_ident</span><span class="p">])</span>
-                                       
-       
+    
         <span class="k">return</span> <span class="n">block_renamed_loaded</span><span class="p">,</span> <span class="n">ident_const_dict</span>
 
     <span class="k">def</span> <span class="nf">get_stmt_idents_ctx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">del_set</span><span class="o">=</span><span class="p">[],</span> <span class="n">const_dict</span> <span class="o">=</span> <span class="p">{}):</span>
@@ -611,6 +610,16 @@ futher anaysis. The module contain a single class named SSA.</p>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
                 <span class="n">left_name</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span>
                 <span class="n">const_dict</span><span class="p">[</span><span class="n">left_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>
+                <span class="c1">#TODO: resolve attributes</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AugAssign</span><span class="p">):</span>
+            <span class="c1"># note here , we need to rewrite this value to its extended form</span>
+            <span class="c1"># if the statement is &quot;a += 1&quot;, then the assigned value should be a+1</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
+                <span class="n">left_name</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">extended_right</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">left_name</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span> <span class="n">stmt</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">const_dict</span><span class="p">[</span><span class="n">left_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">extended_right</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>
                 <span class="c1">#TODO: resolve attributes</span>
                 <span class="k">pass</span>
@@ -922,9 +931,6 @@ Args:
                     <span class="c1">#        phi_loaded_idents[ident].append(ident_name_counter[ident])</span>
                     <span class="c1">#else if ident in ident_name_counter:</span>
 
-                        
-                        
-    
             <span class="n">df_block_ids</span> <span class="o">=</span> <span class="n">DF</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">df_block_id</span> <span class="ow">in</span> <span class="n">df_block_ids</span><span class="p">:</span>
                 <span class="n">df_block</span> <span class="o">=</span> <span class="n">id2blocks</span><span class="p">[</span><span class="n">df_block_id</span><span class="p">]</span> 
@@ -934,8 +940,7 @@ Args:
                         <span class="c1"># this var used</span>
                         <span class="k">if</span> <span class="n">af_ident</span> <span class="ow">in</span> <span class="n">phi_loaded_idents</span><span class="p">:</span>  
                             <span class="n">phi_loaded_idents</span><span class="p">[</span><span class="n">af_ident</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ident_name_counter</span><span class="p">[</span><span class="n">af_ident</span><span class="p">])</span>
-                                       
-       
+    
         <span class="k">return</span> <span class="n">block_renamed_loaded</span><span class="p">,</span> <span class="n">ident_const_dict</span>
 </pre></div>
 
@@ -993,6 +998,16 @@ step2: rename variables so only one definition per name</p>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
                 <span class="n">left_name</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span>
                 <span class="n">const_dict</span><span class="p">[</span><span class="n">left_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>
+                <span class="c1">#TODO: resolve attributes</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AugAssign</span><span class="p">):</span>
+            <span class="c1"># note here , we need to rewrite this value to its extended form</span>
+            <span class="c1"># if the statement is &quot;a += 1&quot;, then the assigned value should be a+1</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
+                <span class="n">left_name</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span>
+                <span class="n">extended_right</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">left_name</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span> <span class="n">stmt</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">const_dict</span><span class="p">[</span><span class="n">left_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">extended_right</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>
                 <span class="c1">#TODO: resolve attributes</span>
                 <span class="k">pass</span>

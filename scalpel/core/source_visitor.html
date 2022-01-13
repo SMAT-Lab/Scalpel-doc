@@ -71,28 +71,32 @@
 <span class="kn">from</span> <span class="nn">.class_visitor</span> <span class="kn">import</span> <span class="n">ClassVisitor</span>
 <span class="kn">from</span> <span class="nn">.fun_def_visitor</span> <span class="kn">import</span> <span class="n">FunDefVisitor</span>
 
+
 <span class="k">def</span> <span class="nf">get_keywords</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">args</span>
     <span class="n">arg_names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">defaults</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">defaults</span>
     <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
         <span class="n">arg_names</span> <span class="o">+=</span> <span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">arg</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">arg_names</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">arg_names</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">SourceVisitor</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">NodeVisitor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pair</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">def</span> <span class="nf">visit_FunctionDef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="n">kw_names</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">kw_names</span>
         <span class="k">return</span> <span class="n">node</span>
+
     <span class="k">def</span> <span class="nf">visit_ClassDef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="n">visitor</span> <span class="o">=</span> <span class="n">ClassVisitor</span><span class="p">()</span>
         <span class="n">visitor</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">visitor</span><span class="o">.</span><span class="n">result</span>
@@ -118,7 +122,7 @@
     <span class="n">defaults</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">defaults</span>
     <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
         <span class="n">arg_names</span> <span class="o">+=</span> <span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">arg</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">arg_names</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">arg_names</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
 </pre></div>
 
         </details>
@@ -141,15 +145,18 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pair</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">def</span> <span class="nf">visit_FunctionDef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="n">kw_names</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">kw_names</span>
         <span class="k">return</span> <span class="n">node</span>
+
     <span class="k">def</span> <span class="nf">visit_ClassDef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="n">visitor</span> <span class="o">=</span> <span class="n">ClassVisitor</span><span class="p">()</span>
         <span class="n">visitor</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">visitor</span><span class="o">.</span><span class="n">result</span>
@@ -231,7 +238,8 @@ allows modifications.</p>
         <span class="n">visitor</span> <span class="o">=</span> <span class="n">ClassVisitor</span><span class="p">()</span>
         <span class="n">visitor</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">visitor</span><span class="o">.</span><span class="n">result</span>

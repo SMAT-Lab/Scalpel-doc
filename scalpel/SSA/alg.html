@@ -71,6 +71,7 @@ TODO: implement a datastructure such as G from networkx for control flow graph. 
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
 
+
 <span class="k">def</span> <span class="nf">immediate_dominators</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Returns the immediate dominators of all nodes of a directed graph.</span>
 
@@ -142,6 +143,7 @@ TODO: implement a datastructure such as G from networkx for control flow graph. 
 
     <span class="k">return</span> <span class="n">idom</span>
 
+
 <span class="k">def</span> <span class="nf">dominance_frontiers</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Returns the dominance frontiers of all nodes of a directed graph.</span>
 
@@ -192,11 +194,13 @@ TODO: implement a datastructure such as G from networkx for control flow graph. 
                         <span class="n">v</span> <span class="o">=</span> <span class="n">idom</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">df</span>
 
+
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])</span>
     <span class="n">res</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">df</span><span class="p">))</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dominance_frontiers</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
     
     <span class="k">assert</span> <span class="n">res</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[]),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">]),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">]),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">]),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">[])]</span>
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>

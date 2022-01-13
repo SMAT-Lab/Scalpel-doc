@@ -151,16 +151,18 @@ futher anaysis. The module contain a single class named SSA.</p>
         <span class="s2">&quot;__version__&quot;</span><span class="p">,</span> <span class="s2">&quot;__all__&quot;</span><span class="p">,</span>  <span class="s2">&quot;__docformat__&quot;</span><span class="p">,</span> <span class="s2">&quot;__package__&quot;</span>
         <span class="p">}</span>
 
+
 <span class="k">def</span> <span class="nf">parse_val</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
-   <span class="c1"># does not return anything</span>
-   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
-       <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
-   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Str</span><span class="p">):</span>
-       <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
-           <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
-       <span class="k">else</span><span class="p">:</span>
-           <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
-   <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
+    <span class="c1"># does not return anything</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
+    <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
+
 
 <span class="k">class</span> <span class="nc">SSA</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -477,7 +479,6 @@ futher anaysis. The module contain a single class named SSA.</p>
         <span class="n">gen_sets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_ident_gen</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_ident_unorder</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">ident_name</span> <span class="ow">in</span> <span class="n">g_s</span> <span class="k">for</span> <span class="n">g_s</span> <span class="ow">in</span> <span class="n">gen_sets</span><span class="p">)</span>
 
-
     <span class="k">def</span> <span class="nf">is_undefined</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_idents</span><span class="p">):</span>
         <span class="n">ident_phi_fun</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">load_idents</span><span class="p">:</span>
@@ -580,15 +581,15 @@ futher anaysis. The module contain a single class named SSA.</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">parse_val</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
-   <span class="c1"># does not return anything</span>
-   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
-       <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
-   <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Str</span><span class="p">):</span>
-       <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
-           <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
-       <span class="k">else</span><span class="p">:</span>
-           <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
-   <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
+    <span class="c1"># does not return anything</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">s</span>
+    <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
 </pre></div>
 
         </details>
@@ -921,7 +922,6 @@ futher anaysis. The module contain a single class named SSA.</p>
     <span class="k">def</span> <span class="nf">hit_scope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ident_name</span><span class="p">,</span> <span class="n">block_ident_gen</span><span class="p">,</span> <span class="n">block_ident_unorder</span><span class="p">):</span>
         <span class="n">gen_sets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_ident_gen</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_ident_unorder</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">ident_name</span> <span class="ow">in</span> <span class="n">g_s</span> <span class="k">for</span> <span class="n">g_s</span> <span class="ow">in</span> <span class="n">gen_sets</span><span class="p">)</span>
-
 
     <span class="k">def</span> <span class="nf">is_undefined</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_idents</span><span class="p">):</span>
         <span class="n">ident_phi_fun</span> <span class="o">=</span> <span class="p">{}</span>

@@ -119,6 +119,9 @@
 <span class="kn">from</span>  <span class="nn">_ast</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">pkgutil</span>
 <span class="kn">import</span> <span class="nn">astor</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
 
 <span class="k">def</span> <span class="nf">iter_fields</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -130,6 +133,7 @@
             <span class="k">yield</span> <span class="n">field</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">pass</span>
+
 
 <span class="k">def</span> <span class="nf">iter_child_nodes</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -144,6 +148,7 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">AST</span><span class="p">):</span>
                     <span class="k">yield</span> <span class="n">item</span>
 
+
 <span class="k">def</span> <span class="nf">iter_stmt_children</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Yield all direct child nodes of *node*, that is, all fields that are nodes</span>
@@ -157,6 +162,7 @@
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">field</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">stmt</span><span class="p">):</span>
                     <span class="k">yield</span> <span class="n">item</span>
+
 
 <span class="k">def</span> <span class="nf">find_local_modules</span><span class="p">(</span><span class="n">import_smts</span><span class="p">):</span>
     <span class="n">smts</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">import_smts</span><span class="p">)</span>
@@ -182,8 +188,9 @@
     <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">m_name</span> <span class="ow">in</span> <span class="n">module_names</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">m_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_modules</span><span class="p">:</span>
-            <span class="n">result</span>  <span class="o">+=</span> <span class="p">[</span><span class="n">m_name</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="p">[</span><span class="n">m_name</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">result</span>
+
 
 <span class="k">def</span> <span class="nf">get_path_by_extension</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">num_of_required_paths</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="s1">&#39;.ipynb&#39;</span><span class="p">):</span>
     <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -196,6 +203,7 @@
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="n">num_of_required_paths</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">paths</span>
     <span class="k">return</span> <span class="n">paths</span>
+
 
 <span class="k">class</span> <span class="nc">Unit</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
@@ -229,6 +237,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+               
                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_stmts</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="s2">&quot;Insertion Failure&quot;</span>
@@ -252,7 +261,7 @@
 
 <span class="k">def</span> <span class="nf">UnitWalker</span><span class="p">(</span><span class="n">module_node</span><span class="p">):</span>
     <span class="c1"># this code is adapted from the implementation of ast.walk</span>
-    <span class="c1"># it does only handle statment level</span>
+    <span class="c1"># it does only handle statement level</span>
     <span class="c1"># offset to the first</span>
     <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
     <span class="n">init_stmts</span> <span class="o">=</span> <span class="p">[]</span>
@@ -268,6 +277,7 @@
             <span class="k">for</span> <span class="n">ch_node</span> <span class="ow">in</span>  <span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
                 <span class="n">ch_node</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">node</span>
                 <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch_node</span><span class="p">)</span>
+
 
 <span class="k">class</span> <span class="nc">StmtIterator</span><span class="p">:</span>
 
@@ -431,7 +441,7 @@ and all items of fields that are lists of nodes.</p>
     <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">m_name</span> <span class="ow">in</span> <span class="n">module_names</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">m_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_modules</span><span class="p">:</span>
-            <span class="n">result</span>  <span class="o">+=</span> <span class="p">[</span><span class="n">m_name</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="p">[</span><span class="n">m_name</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">result</span>
 </pre></div>
 
@@ -511,6 +521,7 @@ and all items of fields that are lists of nodes.</p>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+               
                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_stmts</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="s2">&quot;Insertion Failure&quot;</span>
@@ -619,6 +630,7 @@ and all items of fields that are lists of nodes.</p>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+               
                 <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_stmts</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="s2">&quot;Insertion Failure&quot;</span>
@@ -708,7 +720,7 @@ and all items of fields that are lists of nodes.</p>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">UnitWalker</span><span class="p">(</span><span class="n">module_node</span><span class="p">):</span>
     <span class="c1"># this code is adapted from the implementation of ast.walk</span>
-    <span class="c1"># it does only handle statment level</span>
+    <span class="c1"># it does only handle statement level</span>
     <span class="c1"># offset to the first</span>
     <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
     <span class="n">init_stmts</span> <span class="o">=</span> <span class="p">[]</span>

@@ -43,9 +43,6 @@
                                 <a class="variable" href="#Block.statements">statements</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Block.ssa_form">ssa_form</a>
-                        </li>
-                        <li>
                                 <a class="variable" href="#Block.func_calls">func_calls</a>
                         </li>
                         <li>
@@ -68,6 +65,9 @@
                         </li>
                         <li>
                                 <a class="function" href="#Block.get_calls">get_calls</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Block.ssa_form">ssa_form</a>
                         </li>
                 </ul>
 
@@ -103,16 +103,7 @@
                                 <a class="function" href="#CFG.remove_comments">remove_comments</a>
                         </li>
                         <li>
-                                <a class="function" href="#CFG.get_return_value">get_return_value</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#CFG.search_isinstance">search_isinstance</a>
-                        </li>
-                        <li>
                                 <a class="function" href="#CFG.get_all_blocks">get_all_blocks</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#CFG.backward">backward</a>
                         </li>
                         <li>
                                 <a class="function" href="#CFG.build_visual">build_visual</a>
@@ -150,7 +141,6 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">astor</span>
 <span class="kn">import</span> <span class="nn">graphviz</span> <span class="k">as</span> <span class="nn">gv</span>
-<span class="c1">#from util import tell_type</span>
 
 
 <span class="k">class</span> <span class="nc">Block</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -169,7 +159,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="c1"># Statements in the block.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">statements</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ssa_form</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Calls to functions inside the block (represents context switches to</span>
         <span class="c1"># some functions&#39; CFGs).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">func_calls</span> <span class="o">=</span> <span class="p">[]</span>
@@ -331,6 +320,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">asynchr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The constructor of CFG class. Only name of this graph is required. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Name of a CFG must be a string&quot;</span>
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">asynchr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot;Async must be a boolean value&quot;</span>
         <span class="c1"># Name of the function or module being represented.</span>
@@ -384,21 +377,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_visit_blocks</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">entryblock</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="p">[],</span> <span class="n">calls</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">graph</span>
 
-    <span class="k">def</span> <span class="nf">get_return_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Return</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">search_isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ifstmt</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span> 
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;isinstance&quot;</span><span class="p">):</span>
-                    <span class="n">args</span> <span class="o">=</span> <span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span>
-                    <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span>
-        <span class="k">return</span> <span class="kc">None</span>
     <span class="k">def</span> <span class="nf">get_all_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of code blocks in this CFG; This is generated by BFS order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of code blocks. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_blocks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="kn">import</span> <span class="nn">queue</span>
         <span class="n">all_blocks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -420,46 +405,6 @@
         <span class="c1">#def dfs(start_block):</span>
         <span class="c1">#    # non-recurisve implementation of DFS search</span>
 
-
-    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="n">visit_link</span><span class="p">):</span>
-        <span class="c1"># if not found in the current block, get all lookup results of the predecessors block </span>
-        <span class="c1"># recursively traceback</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">value</span>
-
-        <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">is_visited</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">is_visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">IfExp</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">visit_link</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">entry_link</span> <span class="o">=</span> <span class="n">visit_link</span><span class="o">.</span><span class="n">get_exitcase</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;isinstance&quot;</span> <span class="ow">and</span> <span class="n">entry_link</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">!=</span><span class="s2">&quot;not&quot;</span><span class="p">:</span> 
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>
-                            <span class="k">return</span> <span class="s2">&quot;org:&quot;</span> <span class="o">+</span> <span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Assign</span><span class="p">):</span>
-                <span class="c1"># this is an alias</span>
-                <span class="c1"># revisit the current block</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                    <span class="n">is_visited</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AnnAssign</span><span class="p">):</span>
-                <span class="c1"># what if it is a tuple or attribute</span>
-                <span class="c1"># revisit the current block</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                    <span class="n">is_visited</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">pass</span>
-
-        <span class="c1"># when  reaches here, no def found so far. Then return all the</span>
-        <span class="c1"># possible lookup results</span>
-        <span class="k">for</span> <span class="n">pre_link</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">predecessors</span><span class="p">:</span>
-           <span class="c1"># condition_str = pre_link.get_exitcase() </span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">pre_link</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="n">pre_link</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
     <span class="k">def</span> <span class="nf">build_visual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="n">calls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build a visualisation of the CFG with graphviz and output it in a DOT</span>
@@ -474,7 +419,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_visual</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="n">calls</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">graph</span>
-        <span class="c1">#graph.render(filepath, view=show)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -527,7 +471,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="c1"># Statements in the block.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">statements</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ssa_form</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Calls to functions inside the block (represents context switches to</span>
         <span class="c1"># some functions&#39; CFGs).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">func_calls</span> <span class="o">=</span> <span class="p">[]</span>
@@ -659,7 +602,6 @@ a list of Links that represent control flow jumps.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="c1"># Statements in the block.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">statements</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ssa_form</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Calls to functions inside the block (represents context switches to</span>
         <span class="c1"># some functions&#39; CFGs).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">func_calls</span> <span class="o">=</span> <span class="p">[]</span>
@@ -687,15 +629,6 @@ a list of Links that represent control flow jumps.</p>
                                             <div class="attr variable"><a class="headerlink" href="#Block.statements">#&nbsp;&nbsp</a>
 
         <span class="name">statements</span>
-    </div>
-
-    
-
-                            </div>
-                            <div id="Block.ssa_form" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#Block.ssa_form">#&nbsp;&nbsp</a>
-
-        <span class="name">ssa_form</span>
     </div>
 
     
@@ -910,6 +843,15 @@ Returns:
 
 
                             </div>
+                            <div id="Block.ssa_form" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#Block.ssa_form">#&nbsp;&nbsp</a>
+
+        <span class="name">ssa_form</span>
+    </div>
+
+    
+
+                            </div>
                 </section>
                 <section id="Link">
                                 <div class="attr class">
@@ -1084,6 +1026,10 @@ exitcase of the Link.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">asynchr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The constructor of CFG class. Only name of this graph is required. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Name of a CFG must be a string&quot;</span>
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">asynchr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot;Async must be a boolean value&quot;</span>
         <span class="c1"># Name of the function or module being represented.</span>
@@ -1137,21 +1083,13 @@ exitcase of the Link.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_visit_blocks</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">entryblock</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="p">[],</span> <span class="n">calls</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">graph</span>
 
-    <span class="k">def</span> <span class="nf">get_return_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Return</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">search_isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ifstmt</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span> 
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;isinstance&quot;</span><span class="p">):</span>
-                    <span class="n">args</span> <span class="o">=</span> <span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span>
-                    <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span>
-        <span class="k">return</span> <span class="kc">None</span>
     <span class="k">def</span> <span class="nf">get_all_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of code blocks in this CFG; This is generated by BFS order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of code blocks. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_blocks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="kn">import</span> <span class="nn">queue</span>
         <span class="n">all_blocks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1173,46 +1111,6 @@ exitcase of the Link.</p>
         <span class="c1">#def dfs(start_block):</span>
         <span class="c1">#    # non-recurisve implementation of DFS search</span>
 
-
-    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="n">visit_link</span><span class="p">):</span>
-        <span class="c1"># if not found in the current block, get all lookup results of the predecessors block </span>
-        <span class="c1"># recursively traceback</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">value</span>
-
-        <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">is_visited</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">is_visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">IfExp</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">visit_link</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">entry_link</span> <span class="o">=</span> <span class="n">visit_link</span><span class="o">.</span><span class="n">get_exitcase</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;isinstance&quot;</span> <span class="ow">and</span> <span class="n">entry_link</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">!=</span><span class="s2">&quot;not&quot;</span><span class="p">:</span> 
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>
-                            <span class="k">return</span> <span class="s2">&quot;org:&quot;</span> <span class="o">+</span> <span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Assign</span><span class="p">):</span>
-                <span class="c1"># this is an alias</span>
-                <span class="c1"># revisit the current block</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                    <span class="n">is_visited</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AnnAssign</span><span class="p">):</span>
-                <span class="c1"># what if it is a tuple or attribute</span>
-                <span class="c1"># revisit the current block</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                    <span class="n">is_visited</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">pass</span>
-
-        <span class="c1"># when  reaches here, no def found so far. Then return all the</span>
-        <span class="c1"># possible lookup results</span>
-        <span class="k">for</span> <span class="n">pre_link</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">predecessors</span><span class="p">:</span>
-           <span class="c1"># condition_str = pre_link.get_exitcase() </span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">pre_link</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="n">pre_link</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
     <span class="k">def</span> <span class="nf">build_visual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="n">calls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build a visualisation of the CFG with graphviz and output it in a DOT</span>
@@ -1227,7 +1125,6 @@ exitcase of the Link.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_visual</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span> <span class="n">calls</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">graph</span>
-        <span class="c1">#graph.render(filepath, view=show)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1271,6 +1168,10 @@ CFG).</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">asynchr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The constructor of CFG class. Only name of this graph is required. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Name of a CFG must be a string&quot;</span>
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">asynchr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot;Async must be a boolean value&quot;</span>
         <span class="c1"># Name of the function or module being represented.</span>
@@ -1292,7 +1193,9 @@ CFG).</p>
 
         </details>
 
-    
+            <div class="docstring"><p>The constructor of CFG class. Only name of this graph is required.</p>
+</div>
+
 
                             </div>
                             <div id="CFG.remove_comments" class="classattr">
@@ -1314,53 +1217,6 @@ CFG).</p>
     
 
                             </div>
-                            <div id="CFG.get_return_value" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#CFG.get_return_value">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">get_return_value</span><span class="signature">(self, block)</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">get_return_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Return</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">return</span> <span class="kc">None</span>
-</pre></div>
-
-        </details>
-
-    
-
-                            </div>
-                            <div id="CFG.search_isinstance" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#CFG.search_isinstance">#&nbsp;&nbsp</a>
-
-        
-            <span class="def">def</span>
-            <span class="name">search_isinstance</span><span class="signature">(self, ifstmt)</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">search_isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ifstmt</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span> 
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;isinstance&quot;</span><span class="p">):</span>
-                    <span class="n">args</span> <span class="o">=</span> <span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span>
-                    <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">ifstmt</span><span class="o">.</span><span class="n">test</span>
-        <span class="k">return</span> <span class="kc">None</span>
-</pre></div>
-
-        </details>
-
-    
-
-                            </div>
                             <div id="CFG.get_all_blocks" class="classattr">
                                         <div class="attr function"><a class="headerlink" href="#CFG.get_all_blocks">#&nbsp;&nbsp</a>
 
@@ -1372,6 +1228,12 @@ CFG).</p>
                 <details>
             <summary>View Source</summary>
             <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">get_all_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of code blocks in this CFG; This is generated by BFS order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of code blocks. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_blocks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="kn">import</span> <span class="nn">queue</span>
         <span class="n">all_blocks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1394,62 +1256,12 @@ CFG).</p>
 
         </details>
 
-    
+            <div class="docstring"><p>Get a list of code blocks in this CFG; This is generated by BFS order.</p>
 
-                            </div>
-                            <div id="CFG.backward" class="classattr">
-                                        <div class="attr function"><a class="headerlink" href="#CFG.backward">#&nbsp;&nbsp</a>
+<p>Returns:
+    A list of code blocks.</p>
+</div>
 
-        
-            <span class="def">def</span>
-            <span class="name">backward</span><span class="signature">(self, block, value, is_visited, visit_link)</span>:
-    </div>
-
-                <details>
-            <summary>View Source</summary>
-            <div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="n">visit_link</span><span class="p">):</span>
-        <span class="c1"># if not found in the current block, get all lookup results of the predecessors block </span>
-        <span class="c1"># recursively traceback</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">value</span>
-
-        <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">is_visited</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">is_visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">IfExp</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">visit_link</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">entry_link</span> <span class="o">=</span> <span class="n">visit_link</span><span class="o">.</span><span class="n">get_exitcase</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;isinstance&quot;</span> <span class="ow">and</span> <span class="n">entry_link</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">!=</span><span class="s2">&quot;not&quot;</span><span class="p">:</span> 
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>
-                            <span class="k">return</span> <span class="s2">&quot;org:&quot;</span> <span class="o">+</span> <span class="n">stmt</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Assign</span><span class="p">):</span>
-                <span class="c1"># this is an alias</span>
-                <span class="c1"># revisit the current block</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stmt</span><span class="o">.</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                    <span class="n">is_visited</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AnnAssign</span><span class="p">):</span>
-                <span class="c1"># what if it is a tuple or attribute</span>
-                <span class="c1"># revisit the current block</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stmt</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">value</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
-                    <span class="n">is_visited</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">pass</span>
-
-        <span class="c1"># when  reaches here, no def found so far. Then return all the</span>
-        <span class="c1"># possible lookup results</span>
-        <span class="k">for</span> <span class="n">pre_link</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">predecessors</span><span class="p">:</span>
-           <span class="c1"># condition_str = pre_link.get_exitcase() </span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">pre_link</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">is_visited</span><span class="p">,</span> <span class="n">pre_link</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-</pre></div>
-
-        </details>
-
-    
 
                             </div>
                             <div id="CFG.build_visual" class="classattr">

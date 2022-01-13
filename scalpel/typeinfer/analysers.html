@@ -244,6 +244,9 @@
                                 <a class="function" href="#Heuristics.heuristic_eleven">heuristic_eleven</a>
                         </li>
                         <li>
+                                <a class="function" href="#Heuristics.heuristic_twelve">heuristic_twelve</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#Heuristics.get_bin_op_involved">get_bin_op_involved</a>
                         </li>
                         <li>
@@ -298,6 +301,7 @@ functions, etc.</p>
 <span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">scalpel.SSA.const</span> <span class="kn">import</span> <span class="n">SSA</span>
+
 
 <span class="k">class</span> <span class="nc">BinaryOperatorMap</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -994,8 +998,11 @@ functions, etc.</p>
                 <span class="n">assignments</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">assignments</span><span class="p">,</span>
                 <span class="n">return_node</span><span class="o">=</span><span class="n">actual_return_value</span>
             <span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">+=</span> <span class="p">[</span><span class="n">return_type</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">return_type</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">+=</span> <span class="p">[</span><span class="n">return_type</span><span class="p">]</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">type_val</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;attr&quot;</span><span class="p">]:</span>
@@ -1099,7 +1106,6 @@ functions, etc.</p>
                     <span class="c1"># this includes the case when the return identifier cannot be traced to a definition</span>
                     <span class="k">return</span> <span class="p">[</span><span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
             <span class="k">return</span> <span class="kc">None</span>
-
 
         <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">finalblocks</span><span class="p">:</span>
             <span class="n">return_values</span> <span class="o">=</span> <span class="n">get_return_value</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
@@ -1390,7 +1396,7 @@ functions, etc.</p>
             <span class="c1"># Variable hasn&#39;t been resolved by any other heuristics</span>
             <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">is_instance_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Union[</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">is_instance_types</span><span class="p">)</span><span class="si">}</span><span class="s1">]&#39;</span>
+                    <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">is_instance_types</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">is_instance_types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -1442,8 +1448,7 @@ functions, etc.</p>
                     <span class="c1"># TODO: Raise warning for types that are passed as input incorrectly?</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># Couldn&#39;t infer type from other heuristic, set as union of passed in types</span>
-                    <span class="n">union_types</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
-                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">union_types</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">heuristic_nine</span><span class="p">(</span><span class="n">import_mappings</span><span class="p">,</span> <span class="n">processed_file</span><span class="p">,</span> <span class="n">function_node</span><span class="p">):</span>
@@ -1463,6 +1468,60 @@ functions, etc.</p>
     <span class="k">def</span> <span class="nf">heuristic_eleven</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">processed_file</span><span class="p">,</span> <span class="n">function_node</span><span class="p">):</span>
         <span class="c1"># Find what variables are in comparison operations and resolve types</span>
         <span class="k">pass</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">heuristic_twelve</span><span class="p">(</span><span class="n">function_node</span><span class="p">,</span> <span class="n">function_params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs heuristic 8 for a function&#39;s inputs. Note that this heuristic</span>
+<span class="sd">        attempts to infer/check the types a developer likely intended for function</span>
+<span class="sd">        parameters and provide a limited number of types to the actual number that</span>
+<span class="sd">        may work</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ast_tree: The ast tree for the module the function is in</span>
+<span class="sd">            function_name: The name of the function being checked</span>
+<span class="sd">            function_params: The function parameters from a variable assignment map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param_type_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">function_params</span><span class="p">}</span>
+        <span class="n">param_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">function_params</span><span class="p">}</span>
+
+        <span class="c1"># Collect parameter input types</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">function_node</span><span class="o">.</span><span class="n">args</span>
+        <span class="n">kwarg</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">kwarg</span>
+        <span class="n">kw_defaults</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">kw_defaults</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">defaults</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_type_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">):]:</span>
+                <span class="c1"># None is not helpful, not providing any hint</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">param_type_map</span><span class="p">[</span><span class="n">arg</span><span class="p">][</span><span class="nb">type</span><span class="p">(</span><span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">position</span><span class="o">+=</span><span class="mi">1</span>
+
+        <span class="c1"># Assign parameter input types to parameters</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_types</span> <span class="ow">in</span> <span class="n">param_type_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">parameter</span> <span class="o">=</span> <span class="n">param_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+            <span class="n">type_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_types</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Validate</span>
+                <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">param_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
+                    <span class="c1"># Mismatched inferred types</span>
+                    <span class="c1"># TODO: Raise a warning here?</span>
+                    <span class="k">pass</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># See if we already inferred type from another heuristic, and check against the input type</span>
+                <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">type_values</span><span class="p">:</span>
+                        <span class="c1"># Bad input to function</span>
+                        <span class="c1"># TODO: Raise a warning here?</span>
+                        <span class="k">pass</span>
+                    <span class="c1"># TODO: Raise warning for types that are passed as input incorrectly?</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Couldn&#39;t infer type from other heuristic, set as union of passed in types</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_bin_op_involved</span><span class="p">(</span><span class="n">binary_operation</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span><span class="p">):</span>
@@ -3436,8 +3495,11 @@ Args:
                 <span class="n">assignments</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">assignments</span><span class="p">,</span>
                 <span class="n">return_node</span><span class="o">=</span><span class="n">actual_return_value</span>
             <span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">+=</span> <span class="p">[</span><span class="n">return_type</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">return_type</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">+=</span> <span class="p">[</span><span class="n">return_type</span><span class="p">]</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">type_val</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;attr&quot;</span><span class="p">]:</span>
@@ -3541,7 +3603,6 @@ Args:
                     <span class="c1"># this includes the case when the return identifier cannot be traced to a definition</span>
                     <span class="k">return</span> <span class="p">[</span><span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
             <span class="k">return</span> <span class="kc">None</span>
-
 
         <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">finalblocks</span><span class="p">:</span>
             <span class="n">return_values</span> <span class="o">=</span> <span class="n">get_return_value</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
@@ -3859,8 +3920,11 @@ Args:
                 <span class="n">assignments</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">assignments</span><span class="p">,</span>
                 <span class="n">return_node</span><span class="o">=</span><span class="n">actual_return_value</span>
             <span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">+=</span> <span class="p">[</span><span class="n">return_type</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">return_type</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">+=</span> <span class="p">[</span><span class="n">return_type</span><span class="p">]</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">type_val</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;attr&quot;</span><span class="p">]:</span>
@@ -3984,7 +4048,6 @@ Args:
                     <span class="c1"># this includes the case when the return identifier cannot be traced to a definition</span>
                     <span class="k">return</span> <span class="p">[</span><span class="n">stmt</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
             <span class="k">return</span> <span class="kc">None</span>
-
 
         <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">finalblocks</span><span class="p">:</span>
             <span class="n">return_values</span> <span class="o">=</span> <span class="n">get_return_value</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
@@ -4359,7 +4422,7 @@ Args:
             <span class="c1"># Variable hasn&#39;t been resolved by any other heuristics</span>
             <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">is_instance_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Union[</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">is_instance_types</span><span class="p">)</span><span class="si">}</span><span class="s1">]&#39;</span>
+                    <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">is_instance_types</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">is_instance_types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -4411,8 +4474,7 @@ Args:
                     <span class="c1"># TODO: Raise warning for types that are passed as input incorrectly?</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># Couldn&#39;t infer type from other heuristic, set as union of passed in types</span>
-                    <span class="n">union_types</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
-                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">union_types</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">heuristic_nine</span><span class="p">(</span><span class="n">import_mappings</span><span class="p">,</span> <span class="n">processed_file</span><span class="p">,</span> <span class="n">function_node</span><span class="p">):</span>
@@ -4432,6 +4494,60 @@ Args:
     <span class="k">def</span> <span class="nf">heuristic_eleven</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">processed_file</span><span class="p">,</span> <span class="n">function_node</span><span class="p">):</span>
         <span class="c1"># Find what variables are in comparison operations and resolve types</span>
         <span class="k">pass</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">heuristic_twelve</span><span class="p">(</span><span class="n">function_node</span><span class="p">,</span> <span class="n">function_params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs heuristic 8 for a function&#39;s inputs. Note that this heuristic</span>
+<span class="sd">        attempts to infer/check the types a developer likely intended for function</span>
+<span class="sd">        parameters and provide a limited number of types to the actual number that</span>
+<span class="sd">        may work</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ast_tree: The ast tree for the module the function is in</span>
+<span class="sd">            function_name: The name of the function being checked</span>
+<span class="sd">            function_params: The function parameters from a variable assignment map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param_type_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">function_params</span><span class="p">}</span>
+        <span class="n">param_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">function_params</span><span class="p">}</span>
+
+        <span class="c1"># Collect parameter input types</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">function_node</span><span class="o">.</span><span class="n">args</span>
+        <span class="n">kwarg</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">kwarg</span>
+        <span class="n">kw_defaults</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">kw_defaults</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">defaults</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_type_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">):]:</span>
+                <span class="c1"># None is not helpful, not providing any hint</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">param_type_map</span><span class="p">[</span><span class="n">arg</span><span class="p">][</span><span class="nb">type</span><span class="p">(</span><span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">position</span><span class="o">+=</span><span class="mi">1</span>
+
+        <span class="c1"># Assign parameter input types to parameters</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_types</span> <span class="ow">in</span> <span class="n">param_type_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">parameter</span> <span class="o">=</span> <span class="n">param_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+            <span class="n">type_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_types</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Validate</span>
+                <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">param_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
+                    <span class="c1"># Mismatched inferred types</span>
+                    <span class="c1"># TODO: Raise a warning here?</span>
+                    <span class="k">pass</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># See if we already inferred type from another heuristic, and check against the input type</span>
+                <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">type_values</span><span class="p">:</span>
+                        <span class="c1"># Bad input to function</span>
+                        <span class="c1"># TODO: Raise a warning here?</span>
+                        <span class="k">pass</span>
+                    <span class="c1"># TODO: Raise warning for types that are passed as input incorrectly?</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Couldn&#39;t infer type from other heuristic, set as union of passed in types</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_bin_op_involved</span><span class="p">(</span><span class="n">binary_operation</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span><span class="p">):</span>
@@ -4798,7 +4914,7 @@ Args:
             <span class="c1"># Variable hasn&#39;t been resolved by any other heuristics</span>
             <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">is_instance_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Union[</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">is_instance_types</span><span class="p">)</span><span class="si">}</span><span class="s1">]&#39;</span>
+                    <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">is_instance_types</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">variable</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">is_instance_types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
@@ -4871,8 +4987,7 @@ Args:
                     <span class="c1"># TODO: Raise warning for types that are passed as input incorrectly?</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># Couldn&#39;t infer type from other heuristic, set as union of passed in types</span>
-                    <span class="n">union_types</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
-                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">union_types</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span>
 </pre></div>
 
         </details>
@@ -4944,6 +5059,86 @@ Args:
         </details>
 
     
+
+                            </div>
+                            <div id="Heuristics.heuristic_twelve" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#Heuristics.heuristic_twelve">#&nbsp;&nbsp</a>
+
+                <div class="decorator">@staticmethod</div>
+
+            <span class="def">def</span>
+            <span class="name">heuristic_twelve</span><span class="signature">(function_node, function_params)</span>:
+    </div>
+
+                <details>
+            <summary>View Source</summary>
+            <div class="codehilite"><pre><span></span>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">heuristic_twelve</span><span class="p">(</span><span class="n">function_node</span><span class="p">,</span> <span class="n">function_params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs heuristic 8 for a function&#39;s inputs. Note that this heuristic</span>
+<span class="sd">        attempts to infer/check the types a developer likely intended for function</span>
+<span class="sd">        parameters and provide a limited number of types to the actual number that</span>
+<span class="sd">        may work</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ast_tree: The ast tree for the module the function is in</span>
+<span class="sd">            function_name: The name of the function being checked</span>
+<span class="sd">            function_params: The function parameters from a variable assignment map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">param_type_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">function_params</span><span class="p">}</span>
+        <span class="n">param_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">function_params</span><span class="p">}</span>
+
+        <span class="c1"># Collect parameter input types</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">function_node</span><span class="o">.</span><span class="n">args</span>
+        <span class="n">kwarg</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">kwarg</span>
+        <span class="n">kw_defaults</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">kw_defaults</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">defaults</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_type_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">defaults</span><span class="p">):]:</span>
+                <span class="c1"># None is not helpful, not providing any hint</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">],</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">param_type_map</span><span class="p">[</span><span class="n">arg</span><span class="p">][</span><span class="nb">type</span><span class="p">(</span><span class="n">defaults</span><span class="p">[</span><span class="n">position</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">position</span><span class="o">+=</span><span class="mi">1</span>
+
+        <span class="c1"># Assign parameter input types to parameters</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_types</span> <span class="ow">in</span> <span class="n">param_type_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">parameter</span> <span class="o">=</span> <span class="n">param_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+            <span class="n">type_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_types</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Validate</span>
+                <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">param_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
+                    <span class="c1"># Mismatched inferred types</span>
+                    <span class="c1"># TODO: Raise a warning here?</span>
+                    <span class="k">pass</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># See if we already inferred type from another heuristic, and check against the input type</span>
+                <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">type_values</span><span class="p">:</span>
+                        <span class="c1"># Bad input to function</span>
+                        <span class="c1"># TODO: Raise a warning here?</span>
+                        <span class="k">pass</span>
+                    <span class="c1"># TODO: Raise warning for types that are passed as input incorrectly?</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Couldn&#39;t infer type from other heuristic, set as union of passed in types</span>
+                    <span class="n">parameter</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type_values</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>Performs heuristic 8 for a function's inputs. Note that this heuristic
+attempts to infer/check the types a developer likely intended for function
+parameters and provide a limited number of types to the actual number that
+may work
+Args:
+    ast_tree: The ast tree for the module the function is in
+    function_name: The name of the function being checked
+    function_params: The function parameters from a variable assignment map</p>
+</div>
+
 
                             </div>
                             <div id="Heuristics.get_bin_op_involved" class="classattr">

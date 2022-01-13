@@ -203,7 +203,9 @@ https://github.com/coetaur0/staticfg</p>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span>
 
+
 <span class="n">NAMECONSTANT_TYPE</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span> <span class="k">if</span> <span class="n">is_py38_or_higher</span><span class="p">()</span> <span class="k">else</span> <span class="n">ast</span><span class="o">.</span><span class="n">NameConstant</span>
+
 
 <span class="k">def</span> <span class="nf">invert</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -399,9 +401,10 @@ https://github.com/coetaur0/staticfg</p>
         <span class="n">func_body</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
         <span class="n">func_builder</span> <span class="o">=</span> <span class="n">CFGBuilder</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">functioncfgs</span><span class="p">[(</span><span class="n">enclosing_block_id</span><span class="p">,</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                              <span class="n">func_body</span><span class="p">,</span>
-                                                              <span class="n">asynchr</span><span class="p">,</span>
-                                                              <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+                                                                                   <span class="n">func_body</span><span class="p">,</span>
+                                                                                   <span class="n">asynchr</span><span class="p">,</span>
+                                                                                   <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+
         <span class="k">def</span> <span class="nf">get_arg_names</span><span class="p">(</span><span class="n">argument_node</span><span class="p">):</span>
             <span class="n">arg_names</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">argument_node</span><span class="p">):</span>
@@ -419,7 +422,7 @@ https://github.com/coetaur0/staticfg</p>
 
 <span class="sd">        Args:</span>
 <span class="sd">            node: The AST node containing the function definition.</span>
-<span class="sd">            async: Boolean indicating whether the function for which the CFG is</span>
+<span class="sd">            asynchr: Boolean indicating whether the function for which the CFG is</span>
 <span class="sd">                   being built is asynchronous or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -428,9 +431,9 @@ https://github.com/coetaur0/staticfg</p>
         <span class="n">func_body</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
         <span class="n">func_builder</span> <span class="o">=</span> <span class="n">CFGBuilder</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">class_cfgs</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                              <span class="n">func_body</span><span class="p">,</span>
-                                                              <span class="n">asynchr</span><span class="p">,</span>
-                                                              <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+                                                            <span class="n">func_body</span><span class="p">,</span>
+                                                            <span class="n">asynchr</span><span class="p">,</span>
+                                                            <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">current_id</span> <span class="o">+</span> <span class="mi">1</span>
 
     <span class="k">def</span> <span class="nf">clean_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="p">[]):</span>
@@ -532,6 +535,7 @@ https://github.com/coetaur0/staticfg</p>
     <span class="k">def</span> <span class="nf">visit_Delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_statement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_block</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto_new_block</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">visit_Raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_statement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_block</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">finalblocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_block</span><span class="p">)</span>
@@ -706,6 +710,7 @@ https://github.com/coetaur0/staticfg</p>
         <span class="c1"># Popping the current after loop stack,taking care of errors in case of nested for loops</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">after_loop_block_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">curr_loop_guard_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
     <span class="c1"># Async for loops and async with context managers. </span>
     <span class="c1"># They have the same fields as For and With, respectively. </span>
     <span class="c1"># Only valid in the body of an AsyncFunctionDef.</span>
@@ -1114,9 +1119,10 @@ Returns:
         <span class="n">func_body</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
         <span class="n">func_builder</span> <span class="o">=</span> <span class="n">CFGBuilder</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">functioncfgs</span><span class="p">[(</span><span class="n">enclosing_block_id</span><span class="p">,</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                              <span class="n">func_body</span><span class="p">,</span>
-                                                              <span class="n">asynchr</span><span class="p">,</span>
-                                                              <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+                                                                                   <span class="n">func_body</span><span class="p">,</span>
+                                                                                   <span class="n">asynchr</span><span class="p">,</span>
+                                                                                   <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+
         <span class="k">def</span> <span class="nf">get_arg_names</span><span class="p">(</span><span class="n">argument_node</span><span class="p">):</span>
             <span class="n">arg_names</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">argument_node</span><span class="p">):</span>
@@ -1134,7 +1140,7 @@ Returns:
 
 <span class="sd">        Args:</span>
 <span class="sd">            node: The AST node containing the function definition.</span>
-<span class="sd">            async: Boolean indicating whether the function for which the CFG is</span>
+<span class="sd">            asynchr: Boolean indicating whether the function for which the CFG is</span>
 <span class="sd">                   being built is asynchronous or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -1143,9 +1149,9 @@ Returns:
         <span class="n">func_body</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
         <span class="n">func_builder</span> <span class="o">=</span> <span class="n">CFGBuilder</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">class_cfgs</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                              <span class="n">func_body</span><span class="p">,</span>
-                                                              <span class="n">asynchr</span><span class="p">,</span>
-                                                              <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+                                                            <span class="n">func_body</span><span class="p">,</span>
+                                                            <span class="n">asynchr</span><span class="p">,</span>
+                                                            <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">current_id</span> <span class="o">+</span> <span class="mi">1</span>
 
     <span class="k">def</span> <span class="nf">clean_cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="p">[]):</span>
@@ -1247,6 +1253,7 @@ Returns:
     <span class="k">def</span> <span class="nf">visit_Delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_statement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_block</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto_new_block</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">visit_Raise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_statement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_block</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">finalblocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_block</span><span class="p">)</span>
@@ -1421,6 +1428,7 @@ Returns:
         <span class="c1"># Popping the current after loop stack,taking care of errors in case of nested for loops</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">after_loop_block_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">curr_loop_guard_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
     <span class="c1"># Async for loops and async with context managers. </span>
     <span class="c1"># They have the same fields as For and With, respectively. </span>
     <span class="c1"># Only valid in the body of an AsyncFunctionDef.</span>
@@ -1890,9 +1898,10 @@ empty. Links the current block to the new loop guard.</p>
         <span class="n">func_body</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
         <span class="n">func_builder</span> <span class="o">=</span> <span class="n">CFGBuilder</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">functioncfgs</span><span class="p">[(</span><span class="n">enclosing_block_id</span><span class="p">,</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                              <span class="n">func_body</span><span class="p">,</span>
-                                                              <span class="n">asynchr</span><span class="p">,</span>
-                                                              <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+                                                                                   <span class="n">func_body</span><span class="p">,</span>
+                                                                                   <span class="n">asynchr</span><span class="p">,</span>
+                                                                                   <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+
         <span class="k">def</span> <span class="nf">get_arg_names</span><span class="p">(</span><span class="n">argument_node</span><span class="p">):</span>
             <span class="n">arg_names</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">argument_node</span><span class="p">):</span>
@@ -1934,7 +1943,7 @@ function CFGs of the CFG being built.</p>
 
 <span class="sd">        Args:</span>
 <span class="sd">            node: The AST node containing the function definition.</span>
-<span class="sd">            async: Boolean indicating whether the function for which the CFG is</span>
+<span class="sd">            asynchr: Boolean indicating whether the function for which the CFG is</span>
 <span class="sd">                   being built is asynchronous or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -1943,9 +1952,9 @@ function CFGs of the CFG being built.</p>
         <span class="n">func_body</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
         <span class="n">func_builder</span> <span class="o">=</span> <span class="n">CFGBuilder</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">class_cfgs</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                              <span class="n">func_body</span><span class="p">,</span>
-                                                              <span class="n">asynchr</span><span class="p">,</span>
-                                                              <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
+                                                            <span class="n">func_body</span><span class="p">,</span>
+                                                            <span class="n">asynchr</span><span class="p">,</span>
+                                                            <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_id</span> <span class="o">=</span> <span class="n">func_builder</span><span class="o">.</span><span class="n">current_id</span> <span class="o">+</span> <span class="mi">1</span>
 </pre></div>
 
@@ -1956,7 +1965,7 @@ function CFGs of the CFG being built.</p>
 
 <p>Args:
     node: The AST node containing the function definition.
-    async: Boolean indicating whether the function for which the CFG is
+    asynchr: Boolean indicating whether the function for which the CFG is
            being built is asynchronous or not.</p>
 </div>
 

@@ -112,16 +112,11 @@ fine-grained operations.</p>
 <span class="sd">fine-grained operations. </span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">..core.vars_visitor</span> <span class="kn">import</span> <span class="n">get_vars</span>
 <span class="kn">from</span> <span class="nn">..core.func_call_visitor</span> <span class="kn">import</span> <span class="n">get_func_calls</span>
 <span class="kn">from</span> <span class="nn">scalpel.core.util</span> <span class="kn">import</span> <span class="n">UnitWalker</span>
 <span class="kn">from</span> <span class="nn">..cfg.builder</span> <span class="kn">import</span> <span class="n">CFGBuilder</span>
+
 
 <span class="k">def</span> <span class="nf">get_attr_name</span> <span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
@@ -134,6 +129,7 @@ fine-grained operations.</p>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Subscript</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">get_attr_name</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
+
 <span class="k">class</span> <span class="nc">ImportRelation</span><span class="p">:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -142,6 +138,7 @@ fine-grained operations.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">:</span><span class="n">MNode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="p">[]</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">stmts</span> <span class="o">=</span> <span class="p">[]</span>
+
 
 <span class="k">class</span> <span class="nc">MNode</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
